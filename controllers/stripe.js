@@ -1,6 +1,10 @@
 import prisma from "../config/prisma.js";
 import Stripe from "stripe";
-const stripe = new Stripe("");
+
+// เริ่มต้นใช้งาน Stripe ด้วย secret key จาก environment variables
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// ตอนนี้คุณสามารถ export และใช้งานอ็อบเจกต์ 'stripe' ได้แล้ว
 
 export const payment = async (req, res) => {
   try {

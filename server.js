@@ -3,6 +3,10 @@ import morgan from "morgan";
 const app = express();
 import { readdirSync } from "fs";
 import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
+
+// ส่วนที่เหลือของโค้ดเซิร์ฟเวอร์ของคุณ
 
 // const authRouter = require("./routes/auth");
 // const categoryRouter = require("./routes/category");
