@@ -1,7 +1,10 @@
-import prisma from "../config/prisma.js";
+import { PrismaClient } from "@prisma/client";
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+
+const prisma = new PrismaClient();
 
 export const register = async (req, res) => {
   try {
@@ -42,14 +45,14 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("Login attempt:", email, password);
+    console.log("Login attempt:", email);
 
-    // หา user ใน database
+    // หา user
     const user = await prisma.user.findFirst({
-      where: { email: email },
+      where: { email },
     });
 
-    if (!user || !user.enabled) {
+    if (!user) {
       return res.status(400).json({ message: "User Not Found!!" });
     }
 
@@ -59,7 +62,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Password Invalid!!" });
     }
 
-    // สร้าง payload สำหรับ token
+    // payload
     const payload = {
       id: user.id,
       email: user.email,
@@ -67,22 +70,16 @@ export const login = async (req, res) => {
     };
 
     // generate token
-    jwt.sign(payload, process.env.SECRET, { expiresIn: "1d" }, (err, token) => {
-      if (err) {
-        console.error("JWT error:", err);
-        return res.status(500).json({ message: "Server Error" });
-      }
+    const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1d" });
 
-      // ส่ง response กลับ frontend
-      res.json({
-        message: "Login successful",
-        payload,
-        token,
-      });
+    return res.json({
+      message: "Login successful",
+      payload,
+      token,
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: err.message || "Server error" });
   }
 };
 
