@@ -2,9 +2,6 @@ import prisma from "../config/prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 export const register = async (req, res) => {
   try {
