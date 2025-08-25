@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,10 +17,10 @@ model User {
   role      String   @default("user")
   enabled   Boolean  @default(true)
   address   String?
-  orders    Order[]
-  carts     Cart[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  carts     Cart[]
+  orders    Order[]
 }
 
 model Product {
@@ -36,66 +30,66 @@ model Product {
   price       Float
   sold        Int              @default(0)
   quantity    Int
-  orderItems  ProductOnOrder[]
-  cartItems   ProductOnCart[]
-  images      Image[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-  category    Category?        @relation(fields: [categoryId], references: [id])
   categoryId  Int?
+  images      Image[]
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  cartItems   ProductOnCart[]
+  orderItems  ProductOnOrder[]
 }
 
 model Order {
   id              Int              @id @default(autoincrement())
-  products        ProductOnOrder[]
   cartTotal       Float
   orderStatus     String           @default("Not Process")
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  orderedBy       User             @relation(fields: [orderedById], references: [id])
   orderedById     Int
   stripePaymentId String
   amount          Int
   status          String
   currency        String
+  orderedBy       User             @relation(fields: [orderedById], references: [id])
+  products        ProductOnOrder[]
 }
 
 model ProductOnOrder {
   id        Int     @id @default(autoincrement())
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   Int
   count     Int
   price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Category {
   id        Int       @id @default(autoincrement())
   name      String
-  products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Cart {
   id          Int             @id @default(autoincrement())
-  products    ProductOnCart[]
   cartTotal   Float
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
-  orderedBy   User            @relation(fields: [orderedById], references: [id])
   orderedById Int
+  orderedBy   User            @relation(fields: [orderedById], references: [id])
+  products    ProductOnCart[]
 }
 
 model ProductOnCart {
   id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
   productId Int
   count     Int
   price     Float
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Image {
@@ -106,6 +100,6 @@ model Image {
   secure_url String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
