@@ -1,25 +1,28 @@
 import express from "express";
 import morgan from "morgan";
-const app = express();
 import { readdirSync } from "fs";
 import cors from "cors";
 import dotenv from "dotenv";
+
 dotenv.config();
 
-// ส่วนที่เหลือของโค้ดเซิร์ฟเวอร์ของคุณ
+const app = express();
 
-// const authRouter = require("./routes/auth");
-// const categoryRouter = require("./routes/category");
-
-// middleware to parse JSON bodies
+// middleware
 app.use(morgan("dev"));
 app.use(express.json({ limit: "5mb" }));
-app.use(cors());
-const router = express.Router();
 
-// app.use("/", authRouter); // use the auth router for /register route
-// app.use("/", categoryRouter); // use the category router for /category route
+// ⚡️ ตั้งค่า CORS แบบละเอียด
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // ถ้าใช้ cookie / auth
+  })
+);
 
+// routes
 await Promise.all(
   readdirSync("./routes").map(async (c) => {
     const route = await import(`./routes/${c}`);
@@ -33,10 +36,8 @@ await Promise.all(
   })
 );
 
-// app.post("/", (req, res) => {
-//   res.send("Welcome to the API");
-// });
-
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+// start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
